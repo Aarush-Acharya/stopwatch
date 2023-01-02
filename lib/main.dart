@@ -1,4 +1,4 @@
-import 'dart:async' as a;
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'binding/ini.dart';
@@ -24,12 +24,65 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends MyApp {
+  work() {
+    counter.runin.value = true;
+    Timer.periodic(
+        const Duration(seconds: 1),
+        // ignore: non_constant_identifier_names
+        (timer) => {
+              if (counter.sw.value >= int.parse(cont.text))
+                {
+                  timer.cancel(),
+                  Get.snackbar('T i m e r   C o m p l e t e',
+                      'Congratulations! your timer is complete You can now set a new one',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.cyan),
+                  counter.sw.value = 0,
+                  counter.runin.value = false,
+                  // ignore: unnecessary_new
+                  Timer.periodic(
+                      const Duration(milliseconds: 500),
+                      // ignore: non_constant_identifier_names
+                      (timer2) => {
+                            if (x >= 3)
+                              {
+                                x = 0,
+                                timer2.cancel(),
+                              }
+                            else
+                              {
+                                counter.player.setUrl(
+                                    'http://codeskulptor-demos.commondatastorage.googleapis.com/GalaxyInvaders/pause.wav'),
+                                counter.player.play(),
+                                x++
+                              }
+                          }),
+                  x = 0
+                }
+              else
+                {
+                  counter.startSw(),
+                }
+            });
+  }
+
+  check() {
+    print("runno");
+  }
+
+  retnull() {
+    null;
+  }
+
   var x = 0;
   TextEditingController cont = TextEditingController();
   RegExp digitValidator = RegExp("^[0-9]+\$");
   final String title;
   MyHomePage({super.key, required this.title});
   var counter = Get.find<SwController>();
+  var timer_string = "";
+
+  GlobalKey<FormFieldState> _formKey = GlobalKey<FormFieldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -41,42 +94,39 @@ class MyHomePage extends MyApp {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Obx(
-              () => SizedBox(
-                width: 1180,
-                child: TextField(
-                  controller: cont,
-                  textAlign: TextAlign.center,
-                  onChanged: (inputValue) {
-                    if (cont.text.isEmpty ||
-                        digitValidator.hasMatch(cont.text)) {
-                      counter.setValidator(true);
-                    } else {
-                      counter.setValidator(false);
-                    }
-                    ;
-                    if (digitValidator.hasMatch(cont.text)) {
-                      counter.setRunnable(true);
-                    } else {
-                      counter.setRunnable(false);
-                    }
-                  },
-                  textInputAction: TextInputAction.go,
-                  onSubmitted: (value) {
-                    Get.snackbar('P r e s s  t h e  P l a y  B u t t o n',
-                        'Press the Play Button to start the timer this is for your own caution',
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: Colors.yellow);
-                  },
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    errorText: counter.isANumber.value
+            SizedBox(
+              width: 1180,
+              child: TextFormField(
+                key: _formKey,
+                controller: cont,
+                textAlign: TextAlign.center,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (value) => value!.isEmpty
+                    ? null
+                    : digitValidator.hasMatch(value)
                         ? null
                         : "Please enter a number",
-                    errorStyle: const TextStyle(color: Colors.blueGrey),
-                    border: const OutlineInputBorder(),
-                    labelText: 'Enter Stop Watch Time',
-                  ),
+                textInputAction: TextInputAction.go,
+                onFieldSubmitted: (value) {
+                  if (_formKey.currentState?.validate() != true) return;
+                  Get.snackbar('P r e s s  t h e  P l a y  B u t t o n',
+                      'Press the Play Button to start the timer this is for your own caution',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Colors.yellow);
+                  timer_string = value;
+                },
+                onChanged: (value) {
+                    if (_formKey.currentState?.validate() != true) return;
+                    timer_string = value;
+                },
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  // errorText: counter.isANumber.value
+                  //     ? null
+                  //     : "Please enter a number",
+                  // errorStyle: const TextStyle(color: Colors.blueGrey),
+                  border: OutlineInputBorder(),
+                  labelText: 'Enter Stop Watch Time',
                 ),
               ),
             ),
@@ -122,72 +172,15 @@ class MyHomePage extends MyApp {
           ],
         ),
       ),
-
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          counter.enabled.value
-              ? counter.isANumber.value
-                  ? counter.runnable.value
-                      ? counter.runin.value
-                          ? Get.snackbar(
-                              'T i m e r   A l r e a d   R u n n i n g',
-                              'Please wait for the previos timer to end',
-                              snackPosition: SnackPosition.BOTTOM,
-                              backgroundColor: Colors.yellow)
-                          : a.Timer.periodic(
-                              const Duration(seconds: 1),
-                              // ignore: non_constant_identifier_names
-                              (Timer) => {
-                                    if (counter.sw.value >=
-                                        int.parse(cont.text))
-                                      {
-                                        Timer.cancel(),
-                                        Get.snackbar(
-                                            'T i m e r   C o m p l e t e',
-                                            'Congratulations! your timer is complete You can now set a new one',
-                                            snackPosition: SnackPosition.BOTTOM,
-                                            backgroundColor: Colors.cyan),
-                                        counter.sw.value = 0,
-                                        counter.runin.value = false,
-                                        // ignore: unnecessary_new
-                                        a.Timer.periodic(
-                                            const Duration(milliseconds: 500),
-                                            // ignore: non_constant_identifier_names
-                                            (Timer) => {
-                                                  if(x >= 3){
-                                                    x = 0,
-                                                    Timer.cancel(),
-                                                    }
-                                                    else{
-                                                      counter.player.setUrl(
-                                                          'http://codeskulptor-demos.commondatastorage.googleapis.com/GalaxyInvaders/pause.wav'),
-                                                      counter.player.play(),
-                                                      x++
-                                                    }
-                                                }),
-                                         x = 0
-                                      }
-                                    else
-                                      {
-                                        counter.enabled.value = false,
-                                        counter.runin.value = true,
-                                        counter.startSw(),
-                                        // ignore: prefer_const_constructors
-                                        a.Timer(Duration(microseconds: 200),
-                                            () => counter.enabled.value = true),
-                                      }
-                                  })
-                      : Get.snackbar('S e t  T i m e r  V a l u e',
-                          'Please set a timer value before starting the timer',
-                          colorText: Colors.white,
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: Colors.red)
-                  : Get.snackbar(
-                      'I n v a l i d   I n p u t', 'Please Input a Number',
-                      colorText: Colors.white,
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: Colors.red)
-                      : null;
+          if (timer_string.isEmpty) return counter.get2();
+
+          // ignore: void_checks
+          if (counter.runin.value) return counter.get1();
+          // ignore: void_checks
+          if (_formKey.currentState?.validate() != true) return counter.get3();
+          work();
         },
         tooltip: 'Start Timer',
         child: const Icon(Icons.play_arrow),
